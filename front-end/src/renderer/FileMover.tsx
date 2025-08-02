@@ -26,7 +26,7 @@ function FileSelector() {
     setStatus('Moving file...');
 
     try {
-      // Send the file path to the Spring Boot backend
+      // Send the file path to backend
       const response = await axios.post('http://localhost:8080/api/add-file', {
         sourcePath: selectedFile,
       });
