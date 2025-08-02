@@ -24,6 +24,12 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func moveFileHandler(w http.ResponseWriter, r *http.Request, sourcePath string) {
+    setCORSHeaders(w)
+    
+    handleMoveFile(sourcePath) // Call business logic
+}
+
 func setCORSHeaders(w http.ResponseWriter) {
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Content-Type", "application/json")

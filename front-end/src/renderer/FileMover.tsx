@@ -14,20 +14,20 @@ function FileSelector() {
       if (filePath) {
         setSelectedFile(filePath);
         setStatus('File selected: ' + filePath);
-        handleMoveFile();
+        handleMoveFile(filePath);
       }
     } catch (error) {
       setStatus('Error selecting file: ' + (error as Error).message);
     }
   };
 
-  const handleMoveFile = async () => {
+  const handleMoveFile = async (selectedFile: string) => {
     setIsLoading(true);
     setStatus('Moving file...');
 
     try {
       // Send the file path to backend
-      const response = await axios.post('http://localhost:8080/api/add-file', {
+      const response = await axios.post('http://localhost:8080/api/move-file', {
         sourcePath: selectedFile,
       });
 
