@@ -2,39 +2,33 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"encoding/json"
 )
 
-// Response structure
-type Response struct {
-	Message string `json:"message"`
-}
 
 func main() {
-	// Single API endpoint
+
+	//register handlers
 	http.HandleFunc("/api/hello", helloHandler)
+	http.HandleFunc("/api/test", testHandler)
+	http.HandleFunc("/api/move-file", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("move-file endpoint hit")
+		var req struct {
+        	SourcePath string `json:"sourcePath"`
+    	}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        	http.Error(w, "Invalid JSON", http.StatusBadRequest)
+        	return
+    	}
+		moveFileHandler(w, r, req.SourcePath)
+	})
 	
 	// Start server
 	port := "8080"
 	fmt.Printf("Go backend running on http://localhost:%s\n", port)
-	fmt.Println("Try: http://localhost:8080/api/hello")
 	
 	log.Fatal(http.ListenAndServe(":"+port, nil))
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	// Set CORS headers for Electron
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-	
-	// Create response
-	response := Response{
-		Message: "Hello World from Go backend!",
-	}
-	
-	// Send JSON response
-	json.NewEncoder(w).Encode(response)
 }
