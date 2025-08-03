@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-function FileSelector() {
+function AddRom() {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [status, setStatus] = useState('');
+  const [moveStatus, setMoveStatus] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleFileChange = async () => {
+      handleSelectFile();
+      if (selectedFile) {
+        handleMoveFile(selectedFile);
+      }
+  }
 
   const handleSelectFile = async () => {
     try {
@@ -13,30 +20,29 @@ function FileSelector() {
 
       if (filePath) {
         setSelectedFile(filePath);
-        setStatus('File selected: ' + filePath);
         handleMoveFile(filePath);
       }
     } catch (error) {
-      setStatus('Error selecting file: ' + (error as Error).message);
+      console.error('Error selecting file:', error);
+      setSelectedFile(null);
     }
   };
 
   const handleMoveFile = async (selectedFile: string) => {
     setIsLoading(true);
-    setStatus('Moving file...');
 
     try {
       // Send the file path to backend
-      const response = await axios.post('http://localhost:8080/api/move-file', {
+      const response = await axios.post('http://localhost:8080/api/add-rom', {
         sourcePath: selectedFile,
       });
 
-      setStatus('Success: ' + response.data ? 'File moved' : 'File not moved');
+      setMoveStatus(!!response.data);
       setSelectedFile(null);
     } catch (error) {
       console.log((error as any).status);
       console.log('hit on try to pass to api');
-      setStatus('Error: ' + (error as Error).message);
+      setMoveStatus(false);
     } finally {
       setIsLoading(false);
     }
@@ -47,7 +53,7 @@ function FileSelector() {
       <h2>File Mover</h2>
 
       <div className="controls">
-        <button onClick={handleSelectFile} disabled={isLoading}>
+        <button onClick={handleFileChange} disabled={isLoading}>
           Select File
         </button>
       </div>
@@ -58,13 +64,13 @@ function FileSelector() {
         </div>
       )}
 
-      {status && (
+      {moveStatus && (
         <div className="status">
-          <p>{status}</p>
+          <p>{moveStatus}</p>
         </div>
       )}
     </div>
   );
 }
 
-export default FileSelector;
+export default AddRom;
