@@ -4,35 +4,39 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 
-func handleMoveFile(sourcePath string) error {
-	romFolder := filepath.Join("..", "rom")
+func handleMoveFile(sourcePath string) map[string]string {
+	var fileMap map[string]string = make(map[string]string);
 
 	ext := filepath.Ext(sourcePath)
 
-	cleanPath := filepath.Clean(sourcePath)
+	cleanedSourcePath := filepath.Clean(sourcePath)
 
-	destinationFolder := filepath.Join(romFolder, "Other")
+	//set default destination folder to "Other" for unrecognized file types
+	fileMap["type"] = "Other"
 
-	switch expression := ext; expression {
+	fileMap["fileName"] = strings.TrimSuffix(filepath.Base(sourcePath), ext)
+
+	switch expression := ext; expression { //add more cases as needed for different ROM types
 	case ".gba":
-		destinationFolder = filepath.Join(romFolder, "gba")
+		fileMap["type"] = "gba"
 	}
 	
-
-	return moveFile(cleanPath, destinationFolder)
+	destinationFolder := filepath.Join("../rom", fileMap["type"])
+	destinationPath := filepath.Join(destinationFolder, fileMap["fileName"] + ext)
+	fileMap["source"] = destinationPath
+	moveFile(cleanedSourcePath, destinationFolder, destinationPath)
+	fileMap["image"] = "defualt_image.png" // Placeholder for image path, can be updated later
+	return fileMap;
 }
 
-func moveFile(sourcePath, destinationFolder string) error {
+func moveFile(sourcePath, destinationFolder, destinationPath string) error {
 	if _, err := os.Stat(sourcePath); os.IsNotExist(err) {
 		return fmt.Errorf("source file does not exist: %s", sourcePath)
 	}
-
-	fileName := filepath.Base(sourcePath)
-
-	destinationPath := filepath.Join(destinationFolder, fileName)
 
 	if err := os.MkdirAll(destinationFolder, 0755); err != nil {
 		return fmt.Errorf("failed to create destination directory: %v", err)

@@ -1,14 +1,15 @@
-//HTTP request/response logic
+// HTTP request/response logic
 package main
 
 import (
-    "net/http"
+	"net/http"
 )
 
 func addRomHandler(w http.ResponseWriter, r *http.Request, sourcePath string) {
     setCORSHeaders(w)
     
-    handleMoveFile(sourcePath) // Call business logic
+    fileMap := handleMoveFile(sourcePath)
+    updateRomDatabase(fileMap)
 }
 
 func setCORSHeaders(w http.ResponseWriter) {
