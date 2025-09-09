@@ -12,10 +12,9 @@ import (
 func main() {
 
 	//register handlers
-	http.HandleFunc("/api/hello", helloHandler)
-	http.HandleFunc("/api/test", testHandler)
-	http.HandleFunc("/api/move-file", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("move-file endpoint hit")
+
+	http.HandleFunc("/api/add-rom", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("add-rom endpoint hit")
 		var req struct {
         	SourcePath string `json:"sourcePath"`
     	}
@@ -23,7 +22,7 @@ func main() {
         	http.Error(w, "Invalid JSON", http.StatusBadRequest)
         	return
     	}
-		moveFileHandler(w, r, req.SourcePath)
+		addRomHandler(w, r, req.SourcePath)
 	})
 	
 	// Start server
