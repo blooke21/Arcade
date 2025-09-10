@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 )
 
-func updateRomDatabase(fileMap map[string]string) error {
+func addRomDatabase(fileMap map[string]string) error {
 	dataFilePath := filepath.Join("..", "rom", "rom_database.json")
 	
 	var roms []map[string]string

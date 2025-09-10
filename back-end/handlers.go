@@ -17,7 +17,7 @@ func addRomHandler(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Internal server error", http.StatusInternalServerError)
         return
     }
-    updateRomDatabase(fileMap)
+    addRomDatabase(fileMap)
     w.WriteHeader(http.StatusOK)
     w.Write([]byte(`{"message":"ROM ` + fileMap["fileName"] + ` added successfully"}`))
 }
