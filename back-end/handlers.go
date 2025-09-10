@@ -5,11 +5,21 @@ import (
 	"net/http"
 )
 
-func addRomHandler(w http.ResponseWriter, r *http.Request, sourcePath string) {
+func addRomHandler(w http.ResponseWriter, r *http.Request) {
     setCORSHeaders(w)
+    sourcePath := r.URL.Query().Get("sourcePath")
     
-    fileMap := handleMoveFile(sourcePath)
+    fileMap, err := handleMoveFile(sourcePath)
+    if err == ErrDuplicateROM {
+        http.Error(w, "ROM already exists", http.StatusConflict)
+        return
+    } else if err != nil {
+        http.Error(w, "Internal server error", http.StatusInternalServerError)
+        return
+    }
     updateRomDatabase(fileMap)
+    w.WriteHeader(http.StatusOK)
+    w.Write([]byte(`{"message":"ROM ` + fileMap["fileName"] + ` added successfully"}`))
 }
 
 func setCORSHeaders(w http.ResponseWriter) {

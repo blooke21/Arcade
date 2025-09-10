@@ -8,7 +8,7 @@ import (
 )
 
 
-func handleMoveFile(sourcePath string) map[string]string {
+func handleMoveFile(sourcePath string) (map[string]string, error) {
 	var fileMap map[string]string = make(map[string]string);
 
 	ext := filepath.Ext(sourcePath)
@@ -28,9 +28,15 @@ func handleMoveFile(sourcePath string) map[string]string {
 	destinationFolder := filepath.Join("../rom", fileMap["type"])
 	destinationPath := filepath.Join(destinationFolder, fileMap["fileName"] + ext)
 	fileMap["source"] = destinationPath
+
+	// Check if destination file already exists
+    if _, err := os.Stat(destinationPath); err == nil {
+        return nil, ErrDuplicateROM // Use your custom error here
+    }
+
 	moveFile(cleanedSourcePath, destinationFolder, destinationPath)
 	fileMap["image"] = "defualt_image.png" // Placeholder for image path, can be updated later
-	return fileMap;
+	return fileMap, nil;
 }
 
 func moveFile(sourcePath, destinationFolder, destinationPath string) error {

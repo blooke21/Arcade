@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 )
 
+var ErrDuplicateROM = fmt.Errorf("ROM already exists in database")
 
 func main() {
 
@@ -22,7 +23,7 @@ func main() {
         	http.Error(w, "Invalid JSON", http.StatusBadRequest)
         	return
     	}
-		addRomHandler(w, r, req.SourcePath)
+		addRomHandler(w, r)
 	})
 	
 	// Start server
