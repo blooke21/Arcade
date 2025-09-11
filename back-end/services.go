@@ -8,6 +8,16 @@ import (
 	"encoding/json"
 )
 
+func returnRomList() ([]byte, error) {
+	
+	database, err := getRomDatabase()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get ROM database: %v", err)
+	}
+
+	return database, nil
+}
+
 func addRomDatabase(fileMap map[string]string) error {
 	dataFilePath := filepath.Join("..", "rom", "rom_database.json")
 	

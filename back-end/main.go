@@ -14,6 +14,11 @@ func main() {
 
 	//register handlers
 
+	http.HandleFunc("/api/roms", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("roms endpoint hit")
+		RomListHandler(w, r)
+	})
+
 	http.HandleFunc("/api/add-rom", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("add-rom endpoint hit")
 		var req struct {

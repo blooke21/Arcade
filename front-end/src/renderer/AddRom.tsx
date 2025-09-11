@@ -32,11 +32,11 @@ function AddRom() {
 
   const handleMoveFile = async (selectedFile: string) => {
     setIsLoading(true);
-    let response;
+    let res;
 
     try {
       // Send the file path to backend
-      response = await axios.post('http://localhost:8080/api/add-rom', {
+      res = await axios.post('http://localhost:8080/api/add-rom', {
         sourcePath: selectedFile,
       });
 
@@ -45,7 +45,7 @@ function AddRom() {
       console.log((error as any).status);
       console.log('hit on try to pass to api');
     } finally {
-      setMessage(response?.data.message || 'File move operation completed.');
+      setMessage(res?.data.message || 'File move operation completed.');
       setIsLoading(false);
       setShowPopup(true);
       setTimeout(() => setShowPopup(false), 10000); // Hide popup after 3 seconds

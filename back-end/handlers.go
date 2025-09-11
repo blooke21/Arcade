@@ -5,6 +5,17 @@ import (
 	"net/http"
 )
 
+func RomListHandler(w http.ResponseWriter, _ *http.Request) {
+    setCORSHeaders(w)
+
+    roms, err := returnRomList()
+    if err != nil {
+        http.Error(w, "Failed to get ROM list", http.StatusInternalServerError)
+        return
+    }
+    w.Write(roms)
+}
+
 func addRomHandler(w http.ResponseWriter, _ *http.Request, sourcePath string) {
     setCORSHeaders(w)
 
