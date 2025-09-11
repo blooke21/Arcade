@@ -5,10 +5,9 @@ import (
 	"net/http"
 )
 
-func addRomHandler(w http.ResponseWriter, r *http.Request) {
+func addRomHandler(w http.ResponseWriter, _ *http.Request, sourcePath string) {
     setCORSHeaders(w)
-    sourcePath := r.URL.Query().Get("sourcePath")
-    
+
     fileMap, err := handleMoveFile(sourcePath)
     if err == ErrDuplicateROM {
         http.Error(w, "ROM already exists", http.StatusConflict)
@@ -19,7 +18,7 @@ func addRomHandler(w http.ResponseWriter, r *http.Request) {
     }
     addRomDatabase(fileMap)
     w.WriteHeader(http.StatusOK)
-    w.Write([]byte(`{"message":"ROM ` + fileMap["fileName"] + ` added successfully"}`))
+    w.Write([]byte(`{"message":"ROM ` + fileMap["fileName"] + ` added successfully to ` + fileMap["type"] + `"}`))
 }
 
 func setCORSHeaders(w http.ResponseWriter) {

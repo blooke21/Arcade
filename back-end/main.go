@@ -23,7 +23,7 @@ func main() {
         	http.Error(w, "Invalid JSON", http.StatusBadRequest)
         	return
     	}
-		addRomHandler(w, r)
+		addRomHandler(w, r, req.SourcePath)
 	})
 	
 	// Start server
