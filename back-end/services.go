@@ -8,39 +8,37 @@ import (
 	"encoding/json"
 )
 
-func updateRomDatabase(fileMap map[string]string) error {
+func returnRomList() ([]byte, error) {
+	
+	database, err := getRomDatabase()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get ROM database: %v", err)
+	}
+
+	return database, nil
+}
+
+func addRomDatabase(fileMap map[string]string) error {
 	dataFilePath := filepath.Join("..", "rom", "rom_database.json")
 	
 	var roms []map[string]string
 	
-	// Try to read existing file
-	if data, err := os.ReadFile(dataFilePath); err == nil {
-		// File exists, try to parse it
-		if len(data) > 0 {
-			if err := json.Unmarshal(data, &roms); err != nil {
-				return fmt.Errorf("failed to parse existing database: %v", err)
-			}
-		}
-	} else if !os.IsNotExist(err) {
-		// Some other error occurred
-		return fmt.Errorf("failed to read database file: %v", err)
+	database, err := getRomDatabase();
+	if err != nil {
+		return fmt.Errorf("failed to get ROM database: %v", err)
 	}
-	// If file doesn't exist, roms remains as zero value (empty slice)
+
+	databaseErr := json.Unmarshal(database, &roms)
+	if databaseErr != nil {
+		return fmt.Errorf("failed to decode database: %v", databaseErr)
+	}
 	
-	// Check for duplicate by fileName
-	for _, rom := range roms {
-		if rom["fileName"] == fileMap["fileName"] {
-			return nil // Already exists, skip
-		}
-	}
+	fmt.Printf("Current ROM database: %+v\n", roms)
+
+	fmt.Printf("Adding new ROM entry: %+v\n", fileMap)
 	
 	// Add new ROM
 	roms = append(roms, fileMap)
-	
-	// Ensure directory exists
-	if err := os.MkdirAll(filepath.Dir(dataFilePath), 0755); err != nil {
-		return fmt.Errorf("failed to create directory: %v", err)
-	}
 	
 	// Write back to file
 	jsonData, err := json.MarshalIndent(roms, "", "  ")
@@ -53,4 +51,25 @@ func updateRomDatabase(fileMap map[string]string) error {
 	}
 	
 	return nil
+}
+
+func getRomDatabase() ([]byte, error) {
+	dataFilePath := filepath.Join("..", "rom", "rom_database.json")
+
+	_, err := os.Stat(dataFilePath);
+	if err != nil {
+		file := []byte("[]");
+		if writeErr := os.WriteFile(dataFilePath, file, 0644); writeErr != nil {
+            fmt.Printf("Error creating file: %v\n", writeErr)
+            return nil, writeErr
+        }
+		return file, nil;
+	}
+
+	file, err := os.ReadFile(dataFilePath)
+	if err != nil {
+		fmt.Printf("Error reading file: %v\n", err)
+		return nil, err;
+	}
+	return file, nil;
 }

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Popup from './Popup';
 
 function AddRom() {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [moveStatus, setMoveStatus] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setMessage] = useState('No file selected.');
 
   const handleFileChange = async () => {
       handleSelectFile();
@@ -30,21 +32,23 @@ function AddRom() {
 
   const handleMoveFile = async (selectedFile: string) => {
     setIsLoading(true);
+    let res;
 
     try {
       // Send the file path to backend
-      const response = await axios.post('http://localhost:8080/api/add-rom', {
+      res = await axios.post('http://localhost:8080/api/add-rom', {
         sourcePath: selectedFile,
       });
 
-      setMoveStatus(!!response.data);
       setSelectedFile(null);
     } catch (error) {
       console.log((error as any).status);
       console.log('hit on try to pass to api');
-      setMoveStatus(false);
     } finally {
+      setMessage(res?.data.message || 'File move operation completed.');
       setIsLoading(false);
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 10000); // Hide popup after 3 seconds
     }
   };
 
@@ -58,17 +62,8 @@ function AddRom() {
         </button>
       </div>
 
-      {selectedFile && (
-        <div className="selected-file">
-          <p>Selected file: {selectedFile}</p>
-        </div>
-      )}
+      {showPopup && <Popup message={popupMessage} />}
 
-      {moveStatus && (
-        <div className="status">
-          <p>{moveStatus}</p>
-        </div>
-      )}
     </div>
   );
 }
