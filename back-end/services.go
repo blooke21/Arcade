@@ -1,4 +1,4 @@
-// Business logic
+// Business logic, utility functions
 package main
 
 import (
