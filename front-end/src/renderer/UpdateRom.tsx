@@ -1,49 +1,95 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import Popup from './Popup';
-import { json } from 'node:stream/consumers';
+import Popup from './UpdatePopup';
 
 function UpdateRom() {
-    const [selectedFile, setSelectedFile] = useState(null);
+  /**
+   * Fetch ROMs from the backend
+   */
+  const getRoms = async () => {
+    let res;
 
-    const handleFileChange = async () => {
-        handleSelectdbEntry();
-        if (selectedFile) {
-            // handleUpdateFile(selectedFile);
-        }
+    try {
+      res = await axios.post('http://localhost:8080/api/roms');
+      if (res) {
+        console.log(res.data);
+        return res.data;
+      }
+    } catch (error) {
+      console.error('Error getting roms:', error);
+      setErrorMessage('Error retrieving ROMs from the database.');
+      setSelectedFile(null);
     }
+  };
 
-    const handleSelectdbEntry = async () => {
-        let res;
-        let list;
+  const [roms, setRoms] = useState<Array<any>>([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  // Popup state
+  const [PopupOpen, setPopupOpen] = useState(false);
+  const [PopupFormData, setPopupFormData] = useState({});
 
-        try {
-            res = await axios.post('http://localhost:8080/api/roms');
-            if (res) {
-                console.log(res.data);
-                list = res.data;
-                // // Populate a dropdown with the list of ROMs
-                console.log(list);
-            }
-        }
-        catch (error) {
-            console.error('Error getting roms:', error);
-            setSelectedFile(null);
-        }
+  /**
+   * Fetch ROMs on component mount
+   */
+  React.useEffect(() => {
+    getRoms().then((data) => {
+      if (data) {
+        setRoms(data);
+      }
+    });
+  }, []);
+
+  const handleFileChange = async (selectedRom: any) => {
+    //ODOT why we doing this again?
+    setSelectedFile(selectedRom);
+
+    setPopupOpen(true);
+
+    if (selectedFile) {
+      // handleUpdateFile(selectedFile);
     }
+  };
 
-    return (
-        <div className="file-selector">
-            <h2>Update Rom</h2>
+  return (
+    <div className="file-selector">
+      <h2>Update Rom</h2>
 
-            <div className="controls">
-                <button onClick={handleFileChange} disabled={false}>
-                    Select ROM to Update
+      {roms.length > 0 ? (
+        <div>
+          <h3>Select a ROM to update:</h3>
+          <li>
+            {roms.map((rom) => (
+              <ul key={rom.fileName}>
+                {rom.fileName}
+                <button
+                  onClick={() => {
+                    handleFileChange(rom);
+                  }}
+                >
+                  Update
                 </button>
-            </div>
-
+              </ul>
+            ))}
+          </li>
         </div>
-    );
+      ) : (
+        <p>{errorMessage}</p>
+      )}
+
+      {selectedFile && PopupOpen && (
+        <Popup
+          isOpen={PopupOpen}
+          onClose={() => setPopupOpen(false)}
+          onSubmit={(formData: any) => {
+            setPopupFormData(formData);
+            setPopupOpen(false);
+          }}
+          rom={selectedFile == null ? roms[0] : selectedFile}
+        />
+      )}
+    </div>
+  );
 }
 
 export default UpdateRom;

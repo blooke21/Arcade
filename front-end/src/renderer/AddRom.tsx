@@ -41,6 +41,7 @@ function AddRom() {
       });
 
       setSelectedFile(null);
+      // TODO If successful, ask for name of file and if they have an image. Then if the user enters those, send another request to the backend to update the database with that info.
     } catch (error) {
       console.log((error as any).status);
       console.log('hit on try to pass to api');

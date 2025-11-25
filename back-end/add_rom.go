@@ -8,7 +8,7 @@ import (
 )
 
 
-func handleMoveFile(sourcePath string) (map[string]string, error) {
+func buildMoveFile(sourcePath string) (map[string]string, error) {
 	var fileMap map[string]string = make(map[string]string);
 
 	ext := filepath.Ext(sourcePath)
@@ -25,11 +25,12 @@ func handleMoveFile(sourcePath string) (map[string]string, error) {
 		fileMap["type"] = "gba"
 	}
 	
+	// Create new file path for rom
 	destinationFolder := filepath.Join("../rom", fileMap["type"])
 	destinationPath := filepath.Join(destinationFolder, fileMap["fileName"] + ext)
 	fileMap["source"] = destinationPath
 
-	// Check if destination file already exists
+	// Check if file already exists
     if _, err := os.Stat(destinationPath); err == nil {
         return nil, ErrDuplicateROM // Use your custom error here
     }

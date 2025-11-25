@@ -1,4 +1,4 @@
-// HTTP request/response logic
+// HTTP request/response logic, handles interactions with frontend
 package main
 
 import (
@@ -19,7 +19,7 @@ func RomListHandler(w http.ResponseWriter, _ *http.Request) {
 func addRomHandler(w http.ResponseWriter, _ *http.Request, sourcePath string) {
     setCORSHeaders(w)
 
-    fileMap, err := handleMoveFile(sourcePath)
+    fileMap, err := buildMoveFile(sourcePath)
     if err == ErrDuplicateROM {
         http.Error(w, "ROM already exists", http.StatusConflict)
         return
