@@ -9,7 +9,7 @@ import (
 )
 
 func returnRomList() ([]byte, error) {
-	
+	fmt.Println("Retrieving ROM database...")
 	database, err := getAllRomDatabase()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get ROM database: %v", err)

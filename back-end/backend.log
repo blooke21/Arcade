@@ -1,0 +1,11 @@
+2026/01/18 12:32:31 Running build command!
+2026/01/18 12:32:31 Build ok.
+2026/01/18 12:32:31 Restarting the given command.
+2026/01/18 12:32:31 stderr: 2026/01/18 12:32:31 warning: image directory "/tmp/go-build2319612565/b001/rom/img" not found: stat /tmp/go-build2319612565/b001/rom/img: no such file or directory
+2026/01/18 12:32:31 stdout: Go backend running on http://localhost:8080
+2026/01/18 12:32:31 stdout: A
+2026/01/18 12:32:31 stderr: 2026/01/18 12:32:31 roms endpoint hit
+2026/01/18 12:32:31 stdout: Retrieving ROM database...
+2026/01/18 12:32:53 stdout: A
+2026/01/18 12:32:53 stdout: Retrieving ROM database...
+2026/01/18 12:32:53 stderr: 2026/01/18 12:32:53 roms endpoint hit

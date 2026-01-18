@@ -2,14 +2,15 @@
 package main
 
 import (
-    "encoding/json"
+	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
 // RomListHandler handles fetching the list of ROMs
 func RomListHandler(w http.ResponseWriter, _ *http.Request) {
     setCORSHeaders(w)
-
+    fmt.Println("A")
     roms, err := returnRomList()
     if err != nil {
         http.Error(w, "Failed to get ROM list", http.StatusInternalServerError)
