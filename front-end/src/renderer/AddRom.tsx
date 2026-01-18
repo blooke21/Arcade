@@ -1,28 +1,21 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Popup from './Popup';
+import { selectFile } from './fileUtils';
 
 function AddRom() {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setMessage] = useState('No file selected.');
 
   const handleFileChange = async () => {
-      handleSelectFile();
-      if (selectedFile) {
-        handleMoveFile(selectedFile);
-      }
-  }
-
-  const handleSelectFile = async () => {
     try {
-      // Use the exposed Electron API to open the file dialog
-      const filePath = await (window as any).electronAPI.openFileDialog();
+      const filePath = await selectFile();
 
       if (filePath) {
         setSelectedFile(filePath);
-        handleMoveFile(filePath);
+        await handleMoveFile(filePath);
       }
     } catch (error) {
       console.error('Error selecting file:', error);
@@ -41,7 +34,7 @@ function AddRom() {
       });
 
       setSelectedFile(null);
-      // TODO If successful, ask for name of file and if they have an image. Then if the user enters those, send another request to the backend to update the database with that info.
+      
     } catch (error) {
       console.log((error as any).status);
       console.log('hit on try to pass to api');
@@ -64,7 +57,6 @@ function AddRom() {
       </div>
 
       {showPopup && <Popup message={popupMessage} />}
-
     </div>
   );
 }

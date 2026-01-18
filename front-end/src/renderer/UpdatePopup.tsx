@@ -4,7 +4,8 @@
  * image path will then be passed to the backend and stored in the image database
  */
 
-import React from 'react';
+import React, { useState } from 'react';
+import { selectFile } from './fileUtils';
 
 interface UpdatePopupProps {
   isOpen: boolean;
@@ -14,33 +15,59 @@ interface UpdatePopupProps {
 }
 
 const Popup = ({ isOpen, onClose, onSubmit, rom }: UpdatePopupProps) => {
+  //form state for the inputs passed from update rom
   const [form, setForm] = React.useState({
     name: rom.fileName,
-    imagePath: '',
+    imagePath: rom.image,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [selectedImg, setSelectedImg] = React.useState<string | null>(null);  
+  const [isLoading, setIsLoading] = useState(false);
+
+  //sync form state when rom prop changes
+  React.useEffect(() => {
+    // when rom changes, reset form values to the new rom's data
     setForm({
-      ...form,
-      [e.target.name]: e.target.value,
+      name: rom.fileName,
+      imagePath: rom.image,
     });
+  }, [rom]);
+
+  //handles showing the changes in the form inputs
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name === 'fileName' ? 'name' : name]: value,
+    }));
   };
 
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     onSubmit(form);
+    setIsLoading(false);
+
   };
 
-  if(!isOpen || !rom) return null;
+  const handleFileChange = async () => {
+    try {
+      const filePath = await selectFile();
+    } catch (error) {
+      console.error('Error selecting file:', error);
+      setSelectedImg(null);
+    }
+  };
 
-  const {name, imagePath} = form;
+  if (!isOpen || !rom) return null;
+
+  const { name, imagePath } = form;
 
   return (
     <div className="popup-overlay" onClick={() => onClose()}>
       <div className="popup-content" onClick={(e) => e.stopPropagation()}>
         <h2>Edit Rom</h2>
         <form onSubmit={handleSubmit}>
-        <label htmlFor="fileName">Display Name</label>
+          <label htmlFor="fileName">Display Name</label>
           <input
             type="text"
             name="fileName"
@@ -49,18 +76,15 @@ const Popup = ({ isOpen, onClose, onSubmit, rom }: UpdatePopupProps) => {
             onChange={handleChange}
             required
           />
-        <label htmlFor="imagePath">Image Path</label>
-          <input
-            type="text"
-            name="imagePath"
-            placeholder="Image Path"
-            value={imagePath}
-            onChange={handleChange}
-            required
-          />
+          <img src={imagePath} alt="Current ROM" style={{ width: '200px', height: 'auto', marginBottom: '10px' }} />
+          <button onClick={handleFileChange} disabled={isLoading}>
+          Add new image
+        </button>
           <div className="button-group">
             <button type="submit">Submit</button>
-            <button type="button" onClick={() => onClose()}>Cancel</button>
+            <button type="button" onClick={() => onClose()}>
+              Cancel
+            </button>
           </div>
         </form>
       </div>

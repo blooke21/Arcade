@@ -15,6 +15,13 @@ func buildMoveFile(sourcePath string) (map[string]string, error) {
 
 	cleanedSourcePath := filepath.Clean(sourcePath)
 
+	index, err := getAllRomDatabaseLength()
+	if err != nil {
+		return nil, err
+	}
+
+	fileMap["id"] = fmt.Sprint(index);
+
 	//set default destination folder to "Other" for unrecognized file types
 	fileMap["type"] = "Other"
 
@@ -36,22 +43,7 @@ func buildMoveFile(sourcePath string) (map[string]string, error) {
     }
 
 	moveFile(cleanedSourcePath, destinationFolder, destinationPath)
-	fileMap["image"] = "defualt_image.png" // Placeholder for image path, can be updated later
+
+	fileMap["image"] = "../rom/img/default_image.png" // Placeholder for image path, can be updated later
 	return fileMap, nil;
-}
-
-func moveFile(sourcePath, destinationFolder, destinationPath string) error {
-	if _, err := os.Stat(sourcePath); os.IsNotExist(err) {
-		return fmt.Errorf("source file does not exist: %s", sourcePath)
-	}
-
-	if err := os.MkdirAll(destinationFolder, 0755); err != nil {
-		return fmt.Errorf("failed to create destination directory: %v", err)
-	}
-
-	if err := os.Rename(sourcePath, destinationPath); err != nil {
-		return fmt.Errorf("failed to move file: %v", err)
-	}
-
-	return nil;
 }

@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Popup from './UpdatePopup';
-
+/**
+ * shows a list of roms to update
+ * and handles showing the update popup when a rom is selected
+ * @returns
+ */
 function UpdateRom() {
   /**
    * Fetch ROMs from the backend
@@ -22,8 +26,13 @@ function UpdateRom() {
     }
   };
 
-  const [roms, setRoms] = useState<Array<any>>([]);
-  const [selectedFile, setSelectedFile] = useState(null);
+  type Rom = {
+    fileName: string;
+    // add other fields here as needed
+  }
+
+  const [roms, setRoms] = useState<Array<Rom>>([]);
+  const [selectedFile, setSelectedFile] = useState<Rom | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   // Popup state
   const [PopupOpen, setPopupOpen] = useState(false);
@@ -45,10 +54,6 @@ function UpdateRom() {
     setSelectedFile(selectedRom);
 
     setPopupOpen(true);
-
-    if (selectedFile) {
-      // handleUpdateFile(selectedFile);
-    }
   };
 
   return (
@@ -79,6 +84,7 @@ function UpdateRom() {
 
       {selectedFile && PopupOpen && (
         <Popup
+          key = {selectedFile.fileName}
           isOpen={PopupOpen}
           onClose={() => setPopupOpen(false)}
           onSubmit={(formData: any) => {
