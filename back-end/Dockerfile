@@ -20,6 +20,8 @@ COPY --from=builder /app/backend /app/backend
 
 # default path inside container where rom folder will be mounted
 ENV ROM_IMG_DIR=/app/rom/img
+ENV ROM_DB_DIR=/app/rom/rom_database.json
+ENV EMULATORS_DIR=/app/emulators
 EXPOSE 8080
 
 USER app

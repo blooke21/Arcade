@@ -16,6 +16,8 @@ COPY . .
 
 # Set environment variable
 ENV ROM_IMG_DIR=/app/rom/img
+ENV ROM_DB_DIR=/app/rom/rom_database.json
+ENV EMULATORS_DIR=/app/emulators
 
 EXPOSE 8080
 
