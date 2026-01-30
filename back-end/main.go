@@ -7,12 +7,17 @@ import (
 	"net/http"
 	"encoding/json"
 	"os"
-	"path/filepath"
 )
 
 var ErrDuplicateROM = fmt.Errorf("ROM already exists in database")
 
+var romImgs string
+
+var romDB string
+
 func main() {
+
+	initalizeEnv();
 
 	//register handlers
 
@@ -38,40 +43,21 @@ func main() {
 		editRomHandler(w, r)
 	})
 
-	// Resolve image directory (env var preferred)
-    imgDir := os.Getenv("ROM_IMG_DIR")
-    if imgDir == "" {
-        exePath, err := os.Executable()
-        if err != nil {
-            log.Printf("failed to get executable path: %v", err)
-            // fallback to relative path from working dir
-            imgDir = filepath.Join("..", "rom", "img")
-        } else {
-            exeDir := filepath.Dir(exePath)
-            // rom is sibling to back-end: ../rom/img relative to executable dir
-            imgDir = filepath.Clean(filepath.Join(exeDir, "..", "rom", "img"))
-        }
-    }
-
-    // make absolute and check existence (log but continue)
-    if abs, err := filepath.Abs(imgDir); err == nil {
-        imgDir = abs
-    }
-    if _, err := os.Stat(imgDir); err != nil {
-        log.Printf("warning: image directory %q not found: %v", imgDir, err)
-    }
-    
-    fs := http.FileServer(http.Dir(imgDir))
-    // Wrap to set CORS (your setCORSHeaders sets JSON content-type; for images we want default content-type)
-    http.HandleFunc("/rom/img/", func(w http.ResponseWriter, r *http.Request) {
-        w.Header().Set("Access-Control-Allow-Origin", "*")
-        // strip the prefix so FileServer sees only the filename
-        http.StripPrefix("/rom/img/", fs).ServeHTTP(w, r)
-    })
-
 	// Start server
 	port := "8080"
 	fmt.Printf("Go backend running on http://localhost:%s\n", port)
 	
 	log.Fatal(http.ListenAndServe(":"+port, nil))
+}
+
+func initalizeEnv() {
+	romImgs = os.Getenv("ROM_IMG_DIR")
+    if romImgs == "" {
+        romImgs = "/app/rom/img"
+    }
+
+	romDB = os.Getenv("ROM_DB_DIR")
+    if romDB == "" {
+        romDB = "/app/rom/rom_database.json"
+    }
 }

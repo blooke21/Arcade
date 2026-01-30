@@ -44,6 +44,6 @@ func buildMoveFile(sourcePath string) (map[string]string, error) {
 
 	moveFile(cleanedSourcePath, destinationFolder, destinationPath)
 
-	fileMap["image"] = "../rom/img/default_image.png" // Placeholder for image path, can be updated later
+	fileMap["image"] = romImgs
 	return fileMap, nil;
 }

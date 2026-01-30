@@ -1,0 +1,23 @@
+FROM golang:1.22-alpine
+WORKDIR /app
+
+# Install git (required for go install)
+RUN apk add --no-cache git
+
+# Install CompileDaemon
+RUN go install github.com/githubnemo/CompileDaemon@latest
+
+# Copy go.mod for dependencies
+COPY go.mod go.sum* ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Set environment variable
+ENV ROM_IMG_DIR=/app/rom/img
+
+EXPOSE 8080
+
+# Use go run directly - no build step needed
+CMD ["/go/bin/CompileDaemon", "-directory=.", "-command=go run ."]

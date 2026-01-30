@@ -24,7 +24,7 @@ func returnRomList() ([]byte, error) {
  * @return The ID of the newly added ROM and an error if any
  */
 func addRomDatabase(fileMap map[string]string) (int, error) {
-	dataFilePath := filepath.Join("..", "rom", "rom_database.json")
+	dataFilePath := filepath.Join(romDB)
 	
 	var roms []map[string]string
 	
@@ -66,7 +66,7 @@ func addRomDatabase(fileMap map[string]string) (int, error) {
  * @return The content of the ROM database file and an error if any
  */
 func getAllRomDatabase() ([]byte, error) {
-	dataFilePath := filepath.Join("..", "rom", "rom_database.json")
+	dataFilePath := filepath.Join(romDB)
 
 	_, err := os.Stat(dataFilePath);
 	if err != nil {
